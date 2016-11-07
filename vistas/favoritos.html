@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block titulo  %}
+    Favoritos
+{% endblock %}
+
+{% block contenido_principal %}
+    <!-- Header -->
+    <section style="border-bottom: 2px solid #10A284">
+        <h1 class="text-uppercase" style="margin-top: 0px">Favoritos</h1>
+        <blockquote>
+            <p>Listado de sus favoritos. {{cantidad}} anuncios</p>
+        </blockquote>
+    </section>
+    
+    <!-- Anuncios -->
+    <div class="container-fluid" style="margin-top: 20px; padding-left: 5px; padding-right: 5px;">
+    {% for anuncio in favoritos %}
+        <!-- loop.index comienza con el numero 1 (impar) -->
+        <!-- Si se trata de un anuncio IMPAR incluir un div row -->
+        {% if loop.index % 2 !== 0 %}
+            <div class="row">
+        {% endif %}
+        <div class="col-md-12 col-lg-6" style="padding: 0 5px;">
+            <div class="thumbnail">
+                <h3 class="text-center">{{anuncio.titulo}}</h3>
+                <div id="img_container">
+                    <a href ="/anuncio/{{anuncio._id.toString()}}" class="thumbnail">
+                        <img src="/images/{{anuncio._id.toString()}}MIN-1.jpg">
+                    </a>
+                    <a href="/anuncios/favorito/eliminar/{{anuncio._id.toString()}}" 
+                        title="Eliminar de favoritos" class="buttonFav btn btn-lg btn-danger
+                        glyphicon glyphicon glyphicon-remove"></a>
+                    <a href="/anuncios/reservar/{{anuncio._id.toString()}}" 
+                       title="Reservar" class="buttonRes btn btn-lg btn-primary glyphicon 
+                       glyphicon-credit-card"></a>
+                </div>
+                <div class="caption margenneg">
+                    <h3 style="maring-top: 0px;">
+                        Contacto - 
+                        <a href ="/contacto/{{anuncio.usuario}}/{{anuncio.titulo}}">{{anuncio.usuario}}</a>
+                    </h3>
+                    <p class="trunk">{{ anuncio.descripcion }}</p>
+                    <h2 style="padding-bottom: 15px; border-bottom: 2px solid #10A284">
+                        <!-- Diferenciamos si la edad es 1 o diferente -->
+                        {% if anuncio.edad === '1' %}
+                            <span class="label label-default">{{anuncio.edad}} Año</span>
+                        {% endif %}
+                        {% if anuncio.edad !== '1' %}
+                            <span class="label label-default">{{anuncio.edad}} Años</span>
+                        {% endif %}
+                        <span class="label label-primary">{{anuncio.precio}} €</span>
+                    </h2>
+                    <h4>
+                        <span class="label label-success"><strong>{{anuncio.municipio}}</strong></span>
+                        {% if anuncio.tipo==="oferta" %}
+                            <span class="label label-danger">{{anuncio.tipo}}</span>
+                        {% endif %}
+                        {% if anuncio.tipo==="estandar" %}
+                            <span class="label label-info">{{anuncio.tipo}}</span>
+                        {% endif %}
+                        <!-- De la fecha de publicacion solo se cogen los 10 primeros caracteres.
+                        Los correspondiente a la fecha, eliminando la hora, minutos y segundos-->
+                        <span id="fecha" class="label label-info">{{anuncio.fecha | replace("^(.{10,10})(.*)", "$1")}}</span>
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <!-- Si se trata de un anuncio PAR incluir cierre del div row -->
+        {% if loop.index % 2 === 0 %}
+            </div>
+        {% endif %}
+    {% endfor %}
+    <!-- En el caso de que el numero de anuncios sea impar, cerrar el div row de anuncios -->
+    {% if favoritos.length % 2 !== 0 && favoritos.length !== 0%}
+        </div>
+    {% endif %}
+    </div>
+{% endblock %}
+
+{% block scripts  %}
+    <script>
+        $(document).ready(function() {
+            $("#nav_favoritos").addClass("active");
+            $('.trunk').each(function() {
+                if($(this).text().length > 300){
+                    $(this).text($(this).text().substring(0,300) + "...");
+                }
+            });
+        });
+    </script>
+{% endblock %}

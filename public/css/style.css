@@ -1,0 +1,67 @@
+#img_container {
+    position:relative;
+    display:inline-block;
+}
+
+.buttonFav {
+    position: absolute;
+    margin: 10px;
+}
+
+.buttonRes {
+    position:absolute;
+    margin: 10px 0px 0px 70px;
+}
+
+.margenneg{
+    margin-top: -40px;
+}
+
+.imgCenter{
+    margin: 0 auto;
+}
+
+/****** LOGIN MODAL ******/
+.loginmodal-container {
+    padding: 30px;
+    max-width: 350px;
+    width: 100% !important;
+    background-color: #F7F7F7;
+    margin: 0 auto;
+    border-radius: 2px;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.loginmodal-container h1 {
+    text-align: center;
+    font-size: 1.8em;
+}
+
+.loginmodal-container h2 {
+    text-align: center;
+    font-size: 1.8em;
+    color: #10A284;
+}
+
+.loginmodal-container button {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.login-help{
+    font-size: 15px;
+}
+
+/*Break text*/
+p, h1, h2, h3, h4, h5, h6, span{
+  -ms-word-break: break-all;
+  word-break: break-all;
+
+  word-break: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+

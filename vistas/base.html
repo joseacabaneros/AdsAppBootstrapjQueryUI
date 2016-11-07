@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block titulo %} MaxCotas {% endblock %}</title>
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/jquery-ui.min.css">
+        <link rel="stylesheet" href="/css/style.css">
+        <script src="/jquery/jquery.js"></script>
+        <script src="/js/jquery-ui.min.js"></script>
+        <script src="/js/bootstrap.min.js"></script>
+        <!-- Mostrar ventana de login si se ha registrado incorrectamente -->
+        <script type="text/javascript">
+            $(document).ready(function() {
+                <!-- Inicializar acordeon de busqueda avanzada -->
+                $("#accordion").accordion({
+                    active: false,
+                    collapsible: true
+                });
+                
+                <!-- Mostrar ventana modal de login en el caso de un registro erroneo --> 
+                <!-- o en el intento de acceso a una zona privada -->
+                if(("{{errorlogin}}" === "true") || ("{{login}}" === "true")){
+                    $('#login-modal').modal('show');
+                    $('#nav_collapse').addClass('in');
+                }
+            });
+        </script>
+        {% block scripts %}
+        {% endblock %}
+    </head>
+
+    <body>		
+        <!-- Barra de navegacion -->
+        <nav class="navbar navbar-inverse" style="border-bottom: 5px solid #10A284">
+            <div class="container">
+                <div class="navbar-header">
+                    <!-- Menú simple colapsado para dispositivos moviles -->
+                    <button type="button" class="navbar-toggle collapsed" 
+                            data-toggle="collapse" data-target="#nav_collapse" 
+                            aria-expanded="false">
+                        <span class="sr-only">Botón de navegación</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">MaxCotas</a>
+                </div>
+                
+                <!-- Elementos de menu -->
+                <div class="collapse navbar-collapse" id="nav_collapse">
+                    <ul class="nav navbar-nav ">
+                        <li id="nav_publicar">
+                            <a href="/anuncios/publicar">Publicar</a>
+                        </li>
+                        <li id="nav_misanuncios">
+                            <a href="/anuncios/misanuncios/1">Mis anuncios</a>
+                        </li>
+                        <li id="nav_favoritos">
+                            <a href="/anuncios/favoritos">Favoritos</a>
+                        </li>
+                        <li class="dropdown" id="nav_mensajes">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" 
+                               role="button" aria-haspopup="true" aria-expanded="false">
+                                Mensajes <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li id="nav_recibidos"><a href="/mensajes/recibidos">Recibidos</a></li>
+                                <li id="nav_enviados"><a href="/mensajes/enviados">Enviados</a></li>
+                            </ul>
+                        </li>
+                        <!-- Listado de categorias en el menu que solo se muestra en pantallas pequeñas -->
+                        <li class="dropdown visible-xs visible-sm" id="nav_categorias">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" 
+                               role="button" aria-haspopup="true" aria-expanded="false">
+                                Categorias <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% for cat in categorias %}
+                                    <li id="off_{{cat}}"><a href="/anuncios/categoria/{{cat}}/1" 
+                                                            class="text-uppercase">{{cat}}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    </ul>
+                    
+                    <!-- Formulario de busqueda -->
+                    <form class="navbar-form navbar-right" method="get" action="/anuncios/buscar/1">
+                        <div class="input-group">
+                            <input name="frase" type="text" class="form-control" placeholder="Search">
+                            <div class="input-group-btn">
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <!-- Botones de login y de desconectar -->
+                    <ul class="nav navbar-nav navbar-right">
+                        <!--El boton de desconectar solo se muestra si hay usuario en sesion-->
+                        {% if usuario %}
+                            <p class="navbar-text"><strong>Hola {{usuario}}!</strong></p>
+                            <li><a href="/logout">Desconectar</a></li>
+                        {% endif %}
+                        {% if usuario==undefined %}
+                            <li>
+                                <!-- Ventana modal de login -->
+                                <a href="#" data-toggle="modal" data-target="#login-modal">Login</a>
+                                <div class="modal fade" id="login-modal" tabindex="-1" 
+                                     role="dialog" aria-labelledby="login" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="loginmodal-container">  
+                                            <h1>Inicio de sesión</h1>
+                                            <h2>MaxCotas</h2><br>
+                                            {% if errorlogin %}
+                                                <div class="alert alert-danger" role="alert">
+                                                    El email y la contraseña son incorrectos
+                                                </div>
+                                            {% endif %}
+                                            <form method="post" id="formlogin" action="/login">
+                                                <input class="form-control input-lg" type="email" 
+                                                    name="email" placeholder="Email" required>
+                                                <input class="form-control input-lg" type="password" 
+                                                    name="password" placeholder="Contraseña" minlength="5" required>
+                                                <button class="col-xs-12 col-lg-12 btn btn-lg btn-primary"  
+                                                    type="submit">Iniciar sesión</button>
+                                            </form>
+                                            <div class="login-help">
+                                                <a href="/registro">Regístrate</a>
+                                                <a href="#" class="pull-right">Recordar contraseña</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <!-- Menu de categorias sidebar-->
+            <div class="col-md-3 col-lg-3 hidden-xs hidden-sm sidebar-offcanvas" id="sidebar">
+                <div class="list-group">
+                    <h3 class="text-primary text-uppercase">Categorías</h3>
+                    {% for cat in categorias %}
+                        <a id="nav_{{cat}}" href="/anuncios/categoria/{{cat}}/1" 
+                                                class="text-uppercase list-group-item">{{cat}}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Panel principal -->
+            <div class="col-md-9 col-lg-9" style="border-left: 2px solid #10A284">
+                <!-- Busqueda avanzada, acordeon jqueryui-->
+                <div id="accordion" style="margin-bottom: 20px;">
+                    <h3>Búsqueda avanzada</h3>
+                    <div>
+                        <form method="get" action="/anuncios/avanzada/1" class="form-inline">
+                            <input class="form-control" name="frase" type="text" placeholder="Search" required>
+                            <select class="form-control" name="categoria" id="categoria" required>
+                                {% for cat in categorias %}
+                                    <option value="{{cat}}">{{cat}}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="input-group col-md-3 col-lg-3">
+                                <input class="form-control" name="preciomin" type="number" id="preciomin" min="0"
+                                    accept="" placeholder="Precio desde" required>
+                                <div class="input-group-addon">€</div>
+                            </div>
+                            <div class="input-group col-md-2 col-lg-3">
+                                <input class="form-control" name="preciomax" type="number" id="preciomax" min="1"
+                                    accept="" placeholder="Hasta" required>
+                                <div class="input-group-addon">€</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" >
+                                Buscar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <!-- Contenido principal -->
+                <div class="panel well">
+                    {% block contenido_principal %}
+
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+        
+        <footer class="bg-primary" style="margin-top: 20px; border-top: 5px solid #10A284">
+            <div class="container" style="margin-top: 20px;">
+                <address class="col-sm-12 col-md-5">
+                    <strong>Diseño y Programación de Interfaces de Usuario</strong><br>
+                    Master en Ingeniería Web<br>
+                    Escuela de Ingeniería Informatica<br>
+                    Universidad de Oviedo
+                </address>
+
+                <!-- Texto alineado hacia la derecha para pantallas NO pequeñas -->
+                <address class="col-md-offset-2 col-md-5 text-right hidden-xs">
+                    <strong>Jose Antonio Cabañeros Blanco</strong><br>
+                    <a href="mailto:uo234549@uniovi.es" style="color: #FFF; 
+                       text-decoration: underline">uo234549@uniovi.es</a>
+                </address>
+                
+                <!-- Texto alineado hacia la izquierda para pantallas pequeñas -->
+                <address class="col-sm-12 visible-xs">
+                    <strong>Jose Antonio Cabañeros Blanco</strong><br>
+                    <a href="mailto:uo234549@uniovi.es" style="color: #FFF; 
+                       text-decoration: underline">uo234549@uniovi.es</a>
+                </address>
+            </div>
+        </footer>
+  </body>
+</html>

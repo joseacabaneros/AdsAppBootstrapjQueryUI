@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block titulo  %}
+    Modificar anuncio
+{% endblock %}
+
+{% block contenido_principal %}
+    <!-- Header -->
+    <section style="border-bottom: 2px solid #10A284">
+        <h1 class="text-uppercase" style="margin-top: 0px">Modificar anuncio</h1>
+        <blockquote>
+            <p>Modificar la información del anuncio</p>
+        </blockquote>
+    </section>
+    
+    <div class="container-fluid" style="margin-top: 20px;">
+        <!-- Formulario de publicacion -->
+        <form method="post" action="/anuncios/modificar/{{anuncio._id.toString()}}" 
+              class="form-horizontal" enctype="multipart/form-data" >
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="titulo">Título</label>
+                <div class="col-sm-6">
+                    <input name="titulo" type="text" id="titulo" class="form-control" 
+                           placeholder="Título" minlength="10" 
+                           value="{{anuncio.titulo}}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="categoria">Categoría</label>
+                <div class="col-sm-6">
+                    <select name="categoria" id="categoria" class="form-control">
+                        {% for cat in categorias %}
+                            {% if cat===anuncio.categoria %}
+                                <option value="{{cat}}" selected>{{cat}}</option>
+                            {% endif %}
+                            {% if cat!==anuncio.categoria %}
+                                <option value="{{cat}}">{{cat}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="descripcion">Descripción</label>
+                <div class="col-sm-6">
+                    <textarea name="descripcion" id="descripcion" class="form-control"
+                        rows="5" placeholder="Descripcion" 
+                        minlength="50">{{anuncio.descripcion}}</textarea>
+                </div>
+            </div>
+            <div class="form-group has-feedback">
+                <label class="col-sm-2 control-label" for="precio">Precio</label>
+                <div class="col-sm-6">
+                    <input name="precio" type="number" id="precio" class="form-control" 
+                           min="1" placeholder="50" value="{{anuncio.precio}}">
+                    <span class="form-control-feedback">€</span>
+                </div>
+            </div>
+            <div class="form-group has-feedback">
+                <label class="col-sm-2 control-label" for="edad">Edad</label>
+                <div class="col-sm-6">
+                    <input name="edad" type="number" id="edad" class="form-control" 
+                           min="0" placeholder="2" value="{{anuncio.edad}}">
+                    <span class="form-control-feedback" style="margin-right: 5px;">
+                        Años</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="municipio">Municipio</label>
+                <div class="col-sm-6">
+                    <input name="municipio" type="text" id="text" class="form-control" 
+                           placeholder="León" minlength="2" 
+                           value="{{anuncio.municipio}}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="tipo">Tipo</label>
+                <div class="col-sm-6">
+                    <select name="tipo" id="tipo" class="form-control">
+                        {% if anuncio.tipo==="oferta" %}
+                            <option value="oferta" selected>oferta</option>
+                            <option value="estandar">estandar</option>
+                        {% endif %}
+                        {% if anuncio.tipo==="estandar" %}
+                           <option value="oferta">oferta</option>
+                           <option value="estandar" selected>estandar</option>
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="imagenes">Fotografías</label>
+                <div class="col-sm-6" id='imagenes'>
+                    <input type='file' accept='image/*' name='imagen1' 
+                           style="margin-bottom: 5px;"/>
+                    <input type='file' accept='image/*' name='imagen2'
+                           style="margin-bottom: 5px;"/>
+                    <input type='file' accept='image/*' name='imagen3' 
+                           style="margin-bottom: 5px;"/>
+                    <input type='file' accept='image/*' name='imagen4' 
+                           style="margin-bottom: 5px;"/>
+                </div>
+            </div>
+            <div class="text-center" style="margin-bottom: 10px;">
+                <h3>Fotografías actuales</h3>
+                <div class="row">
+                    <img src="/images/{{ anuncio._id.toString()}}MIN-1.jpg" 
+                         class="img-rounded" style="width: 300px;">
+                    <img src="/images/{{ anuncio._id.toString()}}MIN-2.jpg" 
+                         class="img-rounded" style="width: 300px;">
+                </div>
+                <div class="row">
+                    <img src="/images/{{ anuncio._id.toString()}}MIN-3.jpg" 
+                         class="img-rounded" style="width: 300px;">
+                    <img src="/images/{{ anuncio._id.toString()}}MIN-4.jpg" 
+                         class="img-rounded" style="width: 300px;">
+                </div>
+                <script>
+                    $("img").error(function () { 
+                        $(this).hide();
+                    });
+                </script>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10">
+                    <button type="submit" class="btn btn-lg btn-primary">
+                        Modificar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts  %}
+    <script>
+        $(function() {
+            $("#nav_misanuncios" ).addClass("active");
+        });
+    </script>
+{% endblock %}

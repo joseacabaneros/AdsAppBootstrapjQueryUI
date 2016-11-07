@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block titulo  %}
+    Mis anuncios 
+{% endblock %}
+
+{% block contenido_principal %}
+    <!-- Header -->
+    <section style="border-bottom: 2px solid #10A284">
+        <h1 class="text-uppercase" style="margin-top: 0px">Mis Anuncios</h1>
+        <blockquote>
+            <p>Lista de anuncios publicados por mí</p>
+        </blockquote>
+    </section>
+    
+    <!-- Anuncios -->
+    <div class="container-fluid" style="margin-top: 20px; padding-left: 5px; padding-right: 5px;">
+    {% for anuncio in anuncios %}
+        <div class="row" style="margin-bottom: 40px;">
+            <div class="col-md-4">
+                <div class="thumbnail">
+                    <img src="/images/{{anuncio._id.toString()}}MIN-1.jpg">
+                </div>
+            </div>
+            <div class="col-md-8">
+                <!-- Botones de favoritos y reservar -->
+                <div class="pull-right" style="margin-bottom: 15px;">
+                    {% if anuncio.reserva==="" %}
+                        <a href="/anuncios/modificar/{{ anuncio._id.toString()}}"
+                           title="Modificar" class="btn btn-warning">
+                            <span class="glyphicon glyphicon-erase"></span>
+                            Modificar
+                        </a>
+                    {% endif %}
+                    <a href="/anuncios/eliminar/{{ anuncio._id.toString()}}" 
+                       title="Eliminar" class="btn btn-danger">
+                        <span class="glyphicon glyphicon-trash"></span>
+                        Eliminar
+                    </a>
+                </div>
+                <!-- Si el anuncios esta reservado, mostrar el usuario que lo reservo -->
+                {% if anuncio.reserva!=="" %}
+                    <h2 style="margin-top: 5px">RESERVADO POR "<a href="/contacto/
+                        {{anuncio.reserva}}/responder">{{anuncio.reserva}}</a>"</h2>
+                {% endif %}
+                <h3 style="margin-top: 5px">{{anuncio.titulo}}</h3>
+                <p class="trunk">{{ anuncio.descripcion }}</p>
+                <h2 style="padding-bottom: 15px; border-bottom: 2px solid #10A284">
+                    <!-- Diferenciamos si la edad es 1 o diferente -->
+                    {% if anuncio.edad === '1' %}
+                        <span class="label label-default">{{anuncio.edad}} Año</span>
+                    {% endif %}
+                    {% if anuncio.edad !== '1' %}
+                        <span class="label label-default">{{anuncio.edad}} Años</span>
+                    {% endif %}
+                    <span class="label label-primary">{{anuncio.precio}} €</span>
+                </h2>
+                <h4>
+                    <span class="label label-success"><strong>{{anuncio.municipio}}</strong></span>
+                    {% if anuncio.tipo==="oferta" %}
+                        <span class="label label-danger">{{anuncio.tipo}}</span>
+                    {% endif %}
+                    {% if anuncio.tipo==="estandar" %}
+                        <span class="label label-info">{{anuncio.tipo}}</span>
+                    {% endif %}
+                    <span id="fecha" class="label label-info">{{anuncio.fecha}}</span>
+                </h4>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    
+    <!-- Paginacion -->
+    <nav aria-label="Paginacion" class="text-center">
+        <ul class="pagination pagination-lg"></ul>
+    </nav>
+{% endblock %}
+
+{% block scripts  %}
+    <script>
+        $(document).ready(function() {
+            $(function() {
+                $("#nav_misanuncios" ).addClass("active");
+            });
+            $('.trunk').each(function() {
+                if($(this).text().length > 300){
+                    $(this).text($(this).text().substring(0,1000) + "...");
+                }
+            });
+            
+            //PAGINACION
+            if({{cantidad}} === 0)
+                paginas = 1;
+            else
+                paginas = Math.floor(({{cantidad}}-1)/5) + 1;
+            var pagina = {{pagina}};
+            
+            //FLECHAS PAGINACION IZQUIERDA
+            if(pagina === 1)
+                $('ul.pagination').append("<li class='disabled'><a href='' \n\
+                    aria-label='Anterior'><span aria-hidden='true'>&laquo;</span>\n\
+                    </a></li>");
+            else
+                $('ul.pagination').append("<li><a href='/anuncios/misanuncios/" + 
+                    (pagina-1) + "' aria-label='Anterior'><span aria-hidden='true'>\n\
+                    &laquo;</span></a></li>");
+        
+            //PAGINAS MENORES A LA SELECCIONADA
+            if(pagina < 5){//todos los numeros hasta el seleccionado
+                for(var i=1; i<pagina; i++)
+                    $('ul.pagination').append("<li><a href='/anuncios/misanuncios/" +
+                        i + "'>" + i + "</a></li>");
+            }else{//puntos hasta el seleccionado
+                $('ul.pagination').append("<li><a href='/anuncios/misanuncios/1'>\n\
+                    1</a></li>");
+                $('ul.pagination').append("<li><span>...</span></li>");
+                $('ul.pagination').append("<li><a href='/anuncios/misanuncios/" + 
+                        (pagina-2) + "'>" + (pagina-2) + "</a></li>");
+                $('ul.pagination').append("<li><a href='/anuncios/misanuncios/" + 
+                        (pagina-1) + "'>" + (pagina-1) + "</a></li>");
+            }
+            
+            //PAGINA SELECCIONADA
+            $('ul.pagination').append("<li class='active'><a href=''>" + pagina + 
+                    "<span class='sr-only'>(actual)</span></a></li>");
+            
+            //PAGINAS MAYORES A LA SELECCIONADA
+            if(pagina+3 < paginas){//puntos hasta el numero de paginas
+                $('ul.pagination').append("<li><a href='/anuncios/misanuncios/" + 
+                        (pagina+1) + "'>" + (pagina+1) + "</a></li>");
+                $('ul.pagination').append("<li><a href='/anuncios/misanuncios/" + 
+                        (pagina+2) + "'>" + (pagina+2) + "</a></li>");
+                $('ul.pagination').append("<li><span>...</span></li>");
+                $('ul.pagination').append("<li><a href='/anuncios/misanuncios/" + 
+                        paginas + "'>" + paginas + "</a></li>");
+            }else{//todos los numeros hasta el numero de paginas
+                for(i=(pagina+1); i<(paginas+1); i++)
+                    $('ul.pagination').append("<li><a href='/anuncios/misanuncios/" 
+                        + i + "'>" + i + "</a></li>");
+            }
+            
+            //FLECHAS PAGINACION DERECHA
+            if(pagina === paginas)
+                $('ul.pagination').append("<li class='disabled'><a href='' \n\
+                    aria-label='Siguiente'><span aria-hidden='true'>&raquo;</span>\n\
+                    </a></li>");
+            else
+                $('ul.pagination').append("<li><a href='/anuncios/misanuncios/" + 
+                    (pagina+1) + "' aria-label='Siguiente'><span aria-hidden='true'>\n\
+                    &raquo;</span></a></li>");
+        });   
+    </script>
+{% endblock %}

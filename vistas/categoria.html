@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block titulo  %}
+    Categoría {{ nombre_categoria }} 
+{% endblock %}
+
+{% block contenido_principal %}
+    <!-- Header -->
+    <section style="border-bottom: 2px solid #10A284">
+        <h1 class="text-uppercase" style="margin-top: 0px">{{nombre_categoria}}</h1>
+        <blockquote>
+            <p>Elementos destacados en {{nombre_categoria}}</p>
+        </blockquote>
+    </section>
+    
+    <!-- Anuncios -->
+    <div class="container-fluid" style="margin-top: 20px; padding-left: 5px; padding-right: 5px;">
+    {% for anuncio in anuncios %}
+        <!-- loop.index comienza con el numero 1 (impar) -->
+        <!-- Si se trata de un anuncio IMPAR incluir un div row -->
+        {% if loop.index % 2 !== 0 %}
+            <div class="row">
+        {% endif %}
+        <div class="col-md-12 col-lg-6" style="padding: 0 5px;">
+            <div class="thumbnail">
+                <h3 class="text-center">{{anuncio.titulo}}</h3>
+                <div id="img_container">
+                    <a href ="/anuncio/{{anuncio._id.toString()}}" class="thumbnail">
+                        <img src="/images/{{anuncio._id.toString()}}MIN-1.jpg">
+                    </a>
+                    <a href="/anuncios/favorito/{{anuncio._id.toString()}}" 
+                       title="Añadir a favoritos" class="buttonFav btn btn-lg btn-warning glyphicon glyphicon-heart"></a>
+                    <a href="/anuncios/reservar/{{anuncio._id.toString()}}" 
+                       title="Reservar" class="buttonRes btn btn-lg btn-primary glyphicon glyphicon-credit-card"></a>
+                </div>
+                <div class="caption margenneg">
+                    <h3 style="maring-top: 0px;">
+                        Contacto - 
+                        <a href ="/contacto/{{anuncio.usuario}}/{{anuncio.titulo}}">{{anuncio.usuario}}</a>
+                    </h3>
+                    <p class="trunk">{{ anuncio.descripcion }}</p>
+                    <h2 style="padding-bottom: 15px; border-bottom: 2px solid #10A284">
+                        <!-- Diferenciamos si la edad es 1 o diferente -->
+                        {% if anuncio.edad === '1' %}
+                            <span class="label label-default">{{anuncio.edad}} Año</span>
+                        {% endif %}
+                        {% if anuncio.edad !== '1' %}
+                            <span class="label label-default">{{anuncio.edad}} Años</span>
+                        {% endif %}
+                        <span class="label label-primary">{{anuncio.precio}} €</span>
+                    </h2>
+                    <h4>
+                        <span class="label label-success"><strong>{{anuncio.municipio}}</strong></span>
+                        {% if anuncio.tipo==="oferta" %}
+                            <span class="label label-danger">{{anuncio.tipo}}</span>
+                        {% endif %}
+                        {% if anuncio.tipo==="estandar" %}
+                            <span class="label label-info">{{anuncio.tipo}}</span>
+                        {% endif %}
+                        <!-- De la fecha de publicacion solo se cogen los 10 primeros caracteres.
+                        Los correspondiente a la fecha, eliminando la hora, minutos y segundos-->
+                        <span id="fecha" class="label label-info">{{anuncio.fecha | replace("^(.{10,10})(.*)", "$1")}}</span>
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <!-- Si se trata de un anuncio PAR incluir cierre del div row -->
+        {% if loop.index % 2 === 0 %}
+            </div>
+        {% endif %}
+    {% endfor %}
+    <!-- En el caso de que el numero de anuncios sea impar, cerrar el div row de anuncios -->
+    {% if anuncios.length % 2 !== 0 && anuncios.length !== 0%}
+        </div>
+    {% endif %}
+    </div>
+    
+    <!-- Paginacion -->
+    <nav aria-label="Paginacion" class="text-center">
+        <ul class="pagination pagination-lg"></ul>
+    </nav>
+{% endblock %}
+
+{% block scripts  %}
+    <script>
+        $(document).ready(function() {
+            $(function() {
+                $("#nav_categorias").addClass("active");
+                $("#nav_{{nombre_categoria}}").addClass("active");
+                $("#off_{{ nombre_categoria }}").addClass("active");
+            });
+            $('.trunk').each(function() {
+                if($(this).text().length > 300){
+                    $(this).text($(this).text().substring(0,300) + "...");
+                }
+            });
+            
+            //PAGINACION
+            var paginas;
+            if({{cantidad}} === 0)
+                paginas = 1;
+            else
+                paginas = Math.floor(({{cantidad}}-1)/6) + 1;
+            var pagina = {{pagina}};
+            var categoria = '{{nombre_categoria}}';
+            
+            //FLECHAS PAGINACION IZQUIERDA
+            if(pagina === 1)
+                $('ul.pagination').append("<li class='disabled'><a href='' \n\
+                    aria-label='Anterior'><span aria-hidden='true'>&laquo;</span>\n\
+                    </a></li>");
+            else
+                $('ul.pagination').append("<li><a href='/anuncios/categoria/" + 
+                    categoria + "/" + (pagina-1) + "' aria-label='Anterior'>\n\
+                    <span aria-hidden='true'>&laquo;</span></a></li>");
+        
+            //PAGINAS MENORES A LA SELECCIONADA
+            if(pagina < 5){//todos los numeros hasta el seleccionado
+                for(var i=1; i<pagina; i++)
+                    $('ul.pagination').append("<li><a href='/anuncios/categoria/" + 
+                        categoria + "/" + i + "'>" + i + "</a></li>");
+            }else{//puntos hasta el seleccionado
+                $('ul.pagination').append("<li><a href='/anuncios/categoria/" + 
+                        categoria + "/1'>1</a></li>");
+                $('ul.pagination').append("<li><span>...</span></li>");
+                $('ul.pagination').append("<li><a href='/anuncios/categoria/" + 
+                        categoria + "/" + (pagina-2) + "'>" + (pagina-2) + 
+                        "</a></li>");
+                $('ul.pagination').append("<li><a href='/anuncios/categoria/" + 
+                        categoria + "/" + (pagina-1) + "'>" + (pagina-1) + 
+                        "</a></li>");
+            }
+            
+            //PAGINA SELECCIONADA
+            $('ul.pagination').append("<li class='active'><a href=''>" + pagina + 
+                    "<span class='sr-only'>(actual)</span></a></li>");
+            
+            //PAGINAS MAYORES A LA SELECCIONADA
+            if(pagina+3 < paginas){//puntos hasta el numero de paginas
+                $('ul.pagination').append("<li><a href='/anuncios/categoria/" + 
+                        categoria + "/" + (pagina+1) + "'>" + (pagina+1) + 
+                        "</a></li>");
+                $('ul.pagination').append("<li><a href='/anuncios/categoria/" + 
+                        categoria + "/" + (pagina+2) + "'>" + (pagina+2) + 
+                        "</a></li>");
+                $('ul.pagination').append("<li><span>...</span></li>");
+                $('ul.pagination').append("<li><a href='/anuncios/categoria/" + 
+                        categoria + "/" + paginas + "'>" + paginas + "</a></li>");
+            }else{//todos los numeros hasta el numero de paginas
+                for(i=(pagina+1); i<(paginas+1); i++)
+                    $('ul.pagination').append("<li><a href='/anuncios/categoria/" 
+                        + categoria + "/" + i + "'>" + i + "</a></li>");
+            }
+            
+            //FLECHAS PAGINACION DERECHA
+            if(pagina === paginas)
+                $('ul.pagination').append("<li class='disabled'><a href='' \n\
+                    aria-label='Siguiente'><span aria-hidden='true'>&raquo;</span>\n\
+                    </a></li>");
+            else
+                $('ul.pagination').append("<li><a href='/anuncios/categoria/" + 
+                    categoria + "/" + (pagina+1) + "' aria-label='Siguiente'>\n\
+                    <span aria-hidden='true'>&raquo;</span></a></li>");
+        });   
+    </script>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block titulo  %}
+    Mis anuncios 
+{% endblock %}
+
+{% block contenido_principal %}
+    <!-- Header -->
+    {% if enviados === true %}
+        <section style="border-bottom: 2px solid #10A284">
+            <h1 class="text-uppercase" style="margin-top: 0px">Mis mensajes - 
+                Enviados</h1>
+            <blockquote>
+                <p>Lista de mensajes ENVIADOS. {{cantidad}} mensajes</p>
+            </blockquote>
+        </section>
+    {% endif %}
+    {% if enviados === false %}
+        <section style="border-bottom: 2px solid #10A284">
+            <h1 class="text-uppercase" style="margin-top: 0px">Mis mensajes - Recibidos</h1>
+            <blockquote>
+                <p>Lista de mensajes RECIBIDOS. {{cantidad}} mensajes</p>
+            </blockquote>
+        </section>
+    {% endif %}
+    
+    <!-- Mensajes -->
+    <div class="container-fluid" style="margin-top: 20px; padding-left: 5px; padding-right: 5px;">
+        <ul class="list-group">
+            {% for mensaje in mensajes %}
+                <li class="list-group-item" style="margin-bottom: 10px;">
+                    <!-- Botones de responder y eliminar -->
+                    <div class="pull-right" style="margin-bottom: 15px;">
+                        {% if enviados === false %}
+                            <a href="/contacto/{{mensaje.emisor}}/responder"
+                                    title="Responder" class="btn btn-primary">
+                                <span class="glyphicon glyphicon glyphicon-pencil"></span>
+                                Responder
+                            </a>
+                        {% endif %}
+                        <a href="/mensajes/eliminar?id={{mensaje._id.toString()}}" 
+                            title="Eliminar" class="btn btn-danger">
+                            <span class="glyphicon glyphicon-trash"></span>
+                            Eliminar
+                        </a>
+                    </div>
+                    {% if enviados === true %}
+                        <h3 style="margin-top: 10px">
+                            Mensaje para: <strong>{{mensaje.receptor}}</strong>
+                        </h3>
+                    {% endif %}
+                    {% if enviados === false %}
+                        <h3 style="margin-top: 10px">
+                            Mensaje de: <strong>{{mensaje.emisor}}</strong>
+                        </h3>
+                    {% endif %}
+                    <h4 class="text-muted">{{ mensaje.fecha }}</h4>
+                    <p>{{ mensaje.texto }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
+
+{% block scripts  %}
+    <script>
+        $(document).ready(function() {
+            $(function() {
+                $("#nav_mensajes").addClass("active");
+                if({{enviados}} === true)
+                    $("#nav_enviados").addClass("active");
+                else
+                    $("#nav_recibidos").addClass("active");
+            });
+        });   
+    </script>
+{% endblock %}

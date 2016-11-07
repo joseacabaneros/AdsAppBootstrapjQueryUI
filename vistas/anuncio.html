@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block titulo  %}
+    Anuncios : {{ anuncio.titulo }} 
+{% endblock %}
+
+{% block contenido_principal %}
+    <!-- Botones de favoritos y reservar -->
+    <div class="pull-right" style="margin-bottom: 15px;">
+        <a href="/anuncios/favorito/{{anuncio._id.toString()}}" 
+           title="Añadir a favoritos" class="btn btn-lg btn-warning">
+           <span class=" glyphicon glyphicon-heart"></span> Añadir a favoritos</a>
+        <a href="/anuncios/reservar/{{anuncio._id.toString()}}" 
+            title="Reservar" class="btn btn-lg btn-primary">
+            <span class="glyphicon glyphicon-credit-card"></span> Reservar</a>
+    </div>
+    <!-- Titulo -->
+    <h1 style="margin-top: 5px; padding-bottom: 15px; border-bottom: 2px solid #10A284">
+        {{anuncio.titulo}}
+    </h1>
+    <!-- Precio y edad -->
+    <h2 style="margin-bottom: 20px;">
+        <span class="label label-primary">{{anuncio.precio}} €</span>
+        {% if anuncio.edad === '1' %}
+            <span class="label label-default">{{anuncio.edad}} Año</span>
+        {% endif %}
+        {% if anuncio.edad !== '1' %}
+            <span class="label label-default">{{anuncio.edad}} Años</span>
+        {% endif %}
+        <span class="label label-success"><strong>{{anuncio.municipio}}</strong></span>
+    </h2>
+    <!-- Carousel de imagenes del anuncio -->
+    <div id="carousel-anuncio" class="carousel slide" data-ride="carousel" data-interval="false">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+          <li data-target="#carousel-anuncio" data-slide-to="0" class="active" id="li1"></li>
+          <li data-target="#carousel-anuncio" data-slide-to="1" id="li2"></li>
+          <li data-target="#carousel-anuncio" data-slide-to="2" id="li3"></li>
+          <li data-target="#carousel-anuncio" data-slide-to="3" id="li4"></li>
+        </ol>
+
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+          <div class="item active text-center" id="div1">
+            <img src="/images/{{ anuncio._id.toString()}}-1.jpg" class="imgCenter" id="img1">
+          </div>
+          <div class="item" id="div2">
+            <img src="/images/{{ anuncio._id.toString()}}-2.jpg" class="imgCenter" id="img2">
+          </div>
+          <div class="item" id="div3">
+            <img src="/images/{{ anuncio._id.toString()}}-3.jpg" class="imgCenter" id="img3">
+          </div>    
+          <div class="item" id="div4">
+            <img src="/images/{{ anuncio._id.toString()}}-4.jpg" class="imgCenter" id="img4">
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <a class="left carousel-control" href="#carousel-anuncio" role="button" data-slide="prev">
+          <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+          <span class="sr-only">Anterior</span>
+        </a>
+        <a class="right carousel-control" href="#carousel-anuncio" role="button" data-slide="next">
+          <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+          <span class="sr-only">Siguiente</span>
+        </a>
+    </div>
+    <h3 style="maring-top: 0px;">
+        Contacto - 
+        <a href ="/contacto/{{anuncio.usuario}}/{{anuncio.titulo}}">{{anuncio.usuario}}</a>
+    </h3>
+    <h3>Comentarios del anunciante</h3>
+    <p>{{ anuncio.descripcion }}</p>
+    <h4>
+        {% if anuncio.tipo==="oferta" %}
+            <span class="label label-danger">{{anuncio.tipo}}</span>
+        {% endif %}
+        {% if anuncio.tipo==="estandar" %}
+            <span class="label label-info">{{anuncio.tipo}}</span>
+        {% endif %}
+        <!-- De la fecha de publicacion solo se cogen los 10 primeros caracteres.
+        Los correspondiente a la fecha, eliminando la hora, minutos y segundos-->
+        <span id="fecha" class="label label-info">{{anuncio.fecha}}</span>
+        <span class="label label-default">{{anuncio.categoria}}</span>
+    </h4>
+    <script>
+        $("#img2").error(function () {
+            $("#div2").remove();
+            $("#li2").remove();
+        }); 
+        $("#img3").error(function () {
+            $("#div3").remove();
+            $("#li3").remove();
+        }); 
+        $("#img4").error(function () {
+            $("#div4").remove();
+            $("#li4").remove();
+        }); 
+    </script>
+{% endblock %}
+
+{% block scripts  %}
+    <script>
+        $(document).ready(function() {
+            $(function() {
+                $("#nav_{{anuncio.categoria}}").addClass("active");
+                $("#off_{{anuncio.categoria}}").addClass("active");
+            });
+        });
+    </script>
+{% endblock %}

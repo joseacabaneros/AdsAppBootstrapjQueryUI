@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block titulo  %}
+    Registro de usuario
+{% endblock %}
+
+{% block contenido_principal %}
+    <!-- Header -->
+    <section style="border-bottom: 2px solid #10A284">
+        <h1 class="text-uppercase" style="margin-top: 0px">Registro de usuario</h1>
+        <blockquote>
+            <p>Introduce la información de registro para crear un nuevo usuario</p>
+        </blockquote>
+    </section>
+    
+    <div class="container-fluid" style="margin-top: 20px;">
+        <!-- Mensajes de error -->
+        {% if error==="seudonimo" %}
+            <div class="alert alert-danger" role="alert">
+                El SEUDÓNIMO ya ha sido registrado. Pruebe con otro.
+            </div>
+        {% endif %}
+        {% if error==="email" %}
+            <div class="alert alert-danger" role="alert">
+                El EMAIL ya ha sido registrado. Pruebe con otro.
+            </div>
+        {% endif %}
+
+        <!-- Formulario de registro -->
+        <form method="post" action="/registro" class="form-horizontal"
+          encType="multipart/form-data" >
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="seudonimo">Seudónimo</label>
+                <div class="col-sm-5">
+                    <input name="seudonimo" type="text" id="seudonimo" minlength="3"
+                            class="form-control" placeholder="juanfer23" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="email">Email</label>
+                <div class="col-sm-5">
+                    <input name="email" type="email" id="email" class="form-control" 
+                           placeholder="email@email.com" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="password">Contraseña</label>
+                <div class="col-sm-5">
+                    <input name="password" type="password" id="password" class="form-control" 
+                           placeholder="Contraseña" minlength="5" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-lg btn-primary">Registrarse</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

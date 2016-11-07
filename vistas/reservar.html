@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block titulo  %}
+    Reservar mascota
+{% endblock %}
+
+{% block contenido_principal %}
+    <!-- Header -->
+    <section style="border-bottom: 2px solid #10A284">
+        <h1 class="text-uppercase" style="margin-top: 0px">Reservar mascota</h1>
+        <h3 class="text-uppercase" style="margin-top: 0px">{{anuncio.titulo}}</h3>
+        <blockquote>
+            <p>Introduce tus datos de pago</p>
+        </blockquote>
+    </section>
+    
+    <div class="container-fluid" style="margin-top: 20px;">
+        <!-- Formulario de registro -->
+        <form method="post" action="/anuncios/reservar/{{anuncio._id.toString()}}
+?propietario={{anuncio.usuario}}&titulo={{anuncio.titulo}}" 
+              class="form-horizontal" encType="multipart/form-data" >
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="tarjeta">Número de tarjeta</label>
+                <div class="col-sm-4">
+                    <input name="tarjeta" type="text" id="tarjeta" pattern="\d*"
+                           placeholder="4050455055222333" minlength="16" maxlength="16"
+                           class="form-control" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="nombre">Nombre del titular</label>
+                <div class="col-sm-4">
+                    <input name="nombre" type="text" id="nombre" 
+                           placeholder="Juan Perez Martinez" minlength="2" 
+                           class="form-control" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="fecha">Fecha de caducidad</label>
+                <div class="col-sm-4 row">
+                    <div class="col-sm-6" style="margin: 0">
+                        <input name="fechames" type="number" id="fechames" min="1" max="12" 
+                               placeholder="2" class="form-control" required>
+                    </div>
+                    <div class="col-sm-6" style="margin: 0">
+                        <input name="fechaanyo" type="number" id="fechaanyo" min="2016" max="2026" 
+                            placeholder="2018" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label" for="cvc">CVC/CVV/CID</label>
+                <div class="col-sm-4">
+                    <input name="cvc" type="text" id="cvc" min="0" minlength="3" maxlength="3" 
+                            pattern="\d*" placeholder="336" class="form-control" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <p class="text-muted">Usted va a pagar el 2% como concepto de reserva de la mascota.
+                    Precio de la mascota {{anuncio.precio}}€<p>
+                <h2 id="pagar"></h2>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10">
+                    <button type="submit" class="btn btn-lg btn-primary">Pagar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts  %}
+    <script>
+        $(document).ready(function() {
+            var pagar = ({{anuncio.precio}}*2)/100;
+            $('#pagar').append("TOTAL A PAGAR: " + pagar + "€");
+        });
+    </script>
+{% endblock %}
